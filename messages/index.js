@@ -38,6 +38,10 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
 
 bot.dialog('/', intents);    
 
+bot.dialog('reset', function (session) {
+    session.endConversation("Okay, goodbye!");
+}).triggerAction({ matches: /[^exit]|[^quit]|[^reset]/i});
+
 if (useEmulator) {
     var restify = require('restify');
     var server = restify.createServer();
