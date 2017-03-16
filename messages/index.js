@@ -76,7 +76,7 @@ intents.matches('gifs', [
     session => {
         session.endDialog();
     } 
-]).triggerAction({matches: /^gifs|^gif/i})
+])//.triggerAction({matches: /^gifs|^gif/i})
 
 bot.dialog('/gifs', [
     (session, results) => {
