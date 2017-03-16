@@ -10,7 +10,7 @@ var botbuilder_azure = require("botbuilder-azure");
 let https = require('https');
 let helper = require("./dialogs/helper.js").helper;
 
-var useEmulator = true // (process.env.NODE_ENV == 'development');
+var useEmulator = (process.env.NODE_ENV == 'development') || true;
 
 var connector = useEmulator ? new builder.ChatConnector() : new botbuilder_azure.BotServiceConnector({
     appId: process.env['MicrosoftAppId'],
@@ -26,7 +26,7 @@ var luisAppId = process.env.LuisAppId;
 var luisAPIKey = process.env.LuisAPIKey;
 var luisAPIHostName = process.env.LuisAPIHostName || 'westus.api.cognitive.microsoft.com';
 
-const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v1/application?id=' + luisAppId + '&subscription-key=' + luisAPIKey;
+const LuisModelUrl = 'https://' + luisAPIHostName + '/luis/v2.0/apps/' + luisAppId + '?subscription-key=' + luisAPIKey;
 
 // Main dialog with LUIS
 var recognizer = new builder.LuisRecognizer(LuisModelUrl);
@@ -69,31 +69,47 @@ var intents = new builder.IntentDialog({ recognizers: [recognizer] })
         });
 
 });
-bot.dialog('/gifs', (session) => {
-    let returnedGif ='';
-    session.sendTyping();
-    helper.giphyCall({}, session)
-    .then(response => {
-        let results = JSON.parse(response);
-        let randInt = Math.floor(Math.random()*9);
-        returnedGif = results.data[randInt]["images"]["original"]["url"]
-        returnedGif = returnedGif.replace("\/", "/");
-
-        let card = new builder.AnimationCard(session)
-            .title(`Here is a gif of "` + session.message.text.replace('gif','') + '"')
-            .subtitle(returnedGif)
-            .image(builder.CardImage.create(session, 'https://docs.botframework.com/en-us/images/faq-overview/botframework_overview_july.png'))
-            .media([
-                { url: returnedGif
-                /*'http://i.giphy.com/Ki55RUbOV5njy.gif'*/ }
-            ]);
-        // session.send(returnedGif);
-        session.send('Sorry, I did not understand \'%s\'.', session.message.text);
-        var cardMsg = new builder.Message(session).addAttachment(card);
-        session.send(cardMsg);
+intents.matches('gifs', [
+    session => {
+        session.beginDialog('/gifs');
+    },
+    session => {
         session.endDialog();
-    });
-}).triggerAction({matches: /^gifs|^gif/i})
+    } 
+]).triggerAction({matches: /^gifs|^gif/i})
+
+bot.dialog('/gifs', [
+    (session, results) => {
+        let pointer = session;
+        let entities = builder.EntityRecognizer.findAllEntities(['gif.keyword', 'gif.keywords'], session.message.text)
+        let returnedGif ='';
+        session.send(entities);
+        // session.sendTyping();
+        helper.giphyCall({}, session)
+        .then(response => {
+            let results = JSON.parse(response);
+            let randInt = Math.floor(Math.random()*9);
+            returnedGif = results.data[randInt]["images"]["original"]["url"]
+            returnedGif = returnedGif.replace("\/", "/");
+
+            let card = new builder.AnimationCard(session)
+                .title(`Here is a gif of "` + session.message.text.replace('gif','') + '"')
+                .subtitle(returnedGif)
+                .image(builder.CardImage.create(session, 'https://docs.botframework.com/en-us/images/faq-overview/botframework_overview_july.png'))
+                .media([
+                    { url: returnedGif
+                    /*'http://i.giphy.com/Ki55RUbOV5njy.gif'*/ }
+                ]);
+            session.send('Sorry, I did not understand \'%s\'.', session.message.text);
+            var cardMsg = new builder.Message(session).addAttachment(card);
+            session.send(cardMsg);
+            session.endDialog();
+        });
+    },
+    (session, results) => {
+
+    }
+])
 
 bot.dialog('/', intents);    
 
