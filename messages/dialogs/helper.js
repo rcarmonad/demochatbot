@@ -1,17 +1,21 @@
-
 "use strict"
-
 const builder = require("botbuilder");
 const https = require("https");
 
+/*
+    * Helper module, contains giphyCall and entitiesJoiner
+*/
+
 exports.helper = {
-    giphyCall: function (responseObj, session) {
-        let query = session.message.text.replace(' ', '\+');
+    giphyCall: function (session) {
+        let query = session.dialogData.query;
+    
         let options = {
             hostname: 'api.giphy.com',
-            path: '/v1/gifs/search?q=' + query + '&api_key=dc6zaTOxFJmzC&rating=pg&limit=10',
+            path: '/v1/gifs/search?q=' + query + '&api_key=dc6zaTOxFJmzC&rating=pg&limit=100',
             method: 'GET',
         };
+    
         let response = '';
         return new Promise(function (resolve, reject) {
             https.request(options, function (res) {
@@ -31,5 +35,16 @@ exports.helper = {
                 });
             }).end();
         })
+    },
+    entitiesJoiner: function (arrOfEntities) {
+        let stringKeywords = '';
+        let whitespaces = 0;
+        for (let i = 0; i < arrOfEntities.length; i++) {
+            stringKeywords += arrOfEntities[i].entity;
+            if (arrOfEntities.length - 1 != i) {
+                stringKeywords += ' ';
+            }
+        }
+        return stringKeywords;
     }
 }
