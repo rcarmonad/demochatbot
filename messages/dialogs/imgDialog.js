@@ -49,7 +49,7 @@ exports.dialog = function() {
 
                 let card = new builder.HeroCard(session)
                     .title('Here is an image of "%s"', session.privateConversationData.imgQSubject)
-                    .subtitle('Image on a hero card')
+                    .subtitle(returnedImg)
                     .images([builder.CardImage.create(session, returnedImg)])
                     .buttons([
                         builder.CardAction.openUrl(session, returnedImg, 'View in browser')

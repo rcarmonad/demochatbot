@@ -48,7 +48,6 @@ exports.dialog = function() {
                 let card = new builder.AnimationCard(session)
                     .title('Here is a gif of "%s"', session.privateConversationData.querySubject)
                     .subtitle(returnedGif)
-                    .image(builder.CardImage.create(session, 'https://docs.botframework.com/en-us/images/faq-overview/botframework_overview_july.png'))
                     .media([
                         { url: returnedGif }
                     ]).buttons([
