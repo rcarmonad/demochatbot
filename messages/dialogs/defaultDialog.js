@@ -27,7 +27,7 @@ exports.dialog = function() {
                 session.conversationData.restartDefault = false;
                 builder.Prompts.choice(session,
                 ['What can I help you with?','How can I help you?'],
-                'Brief description of bot. | Technologies used for this bot. | Nevermind.');    
+                'Brief description of bot | Technologies used for this bot | Exiting the converation or dialogs | Nevermind');    
             } else {
                 session.send('Okay! If you need any help with anything, type "help" at anytime for assistance.');
                 session.endDialog('Exiting dialog.');
@@ -45,6 +45,8 @@ exports.dialog = function() {
                     builder.Prompts.confirm(session, 'Would you like to go back to the help menu? If not, this dialog will close.');
                     break;
                 case 2:
+                    session.send('At anytime you may type "exit" to reset the entire conversation.<br/>If you type "cancel" or "end", you can end your current dialog.')
+                case 3:
                     session.endDialog('Okay! If you need any help with anything, type "help" at anytime for assistance.');
                     break;
     
