@@ -47,6 +47,7 @@ exports.dialog = function() {
                 case 2:
                     session.send('At anytime you may type "exit" to reset the entire conversation.<br/>If you type "cancel" or "end", you can end your current dialog.');
                     builder.Prompts.confirm(session, 'Would you like to go back to the help menu? If not, this dialog will close.');
+                    break;
                 case 3:
                     session.endDialog('Okay! If you need any help with anything, type "help" at anytime for assistance.');
                     break;
