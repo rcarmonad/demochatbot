@@ -6,16 +6,18 @@ const https = require("https");
     * Helper module, contains giphyCall and entitiesJoiner
 */
 
+const giphyAPIKey = process.env.GiphyBetaAPIKey
+
 exports.helper = {
     giphyCall: function (session) {
         let query = session.dialogData.query;
-    
+
         let options = {
             hostname: 'api.giphy.com',
-            path: '/v1/gifs/search?q=' + query + '&api_key=dc6zaTOxFJmzC&rating=pg&limit=100',
+            path: '/v1/gifs/search?q=' + query + '&api_key='+ giphyAPIKey+ '&rating=pg&limit=100',
             method: 'GET',
         };
-    
+
         let response = '';
         return new Promise(function (resolve, reject) {
             https.request(options, function (res) {
